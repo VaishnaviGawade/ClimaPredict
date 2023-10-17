@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualization</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h1 class="text-center">Data Visualization</h1>
+                <div class="card">
+                    <div class="card-body">
+                        <form id="data-form">
+                            <div class="form-group">
+                                <label for="location">Select Location:</label>
+                                <select class="form-control" id="location" name="location">
+                                    <option value="Melbourne">Melbourne</option>
+                                    <option value="Perth">Perth</option>
+                                    <option value="Brisbane">Brisbane</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="crop">Select Crop Type:</label>
+                                <select class="form-control" id="crop" name="crop">
+                                    <option value="Production_Value_Barley">Barley</option>
+                                    <option value="Production_Value_Canola">Canola</option>
+                                    <option value="Production_Value_Wheat">Wheat</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Generate Line Graph</button>
+                        </form>
+                        <div class="mt-4">
+                            <canvas id="line-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('data-form');
+            const chartCanvas = document.getElementById('line-chart').getContext('2d');
+            let currentChart = null; // Track the current chart instance
+
+            // Function to fetch and update the chart
+            function updateChart(location, crop) {
+                // Check if a chart exists and destroy it
+                if (currentChart) {
+                    currentChart.destroy();
+                }
+
+                fetch('/get_data', {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        location: location,
+                        crop: crop
+                    }),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if ('error' in data) {
+                        console.error('Error:', data.error);
+                    } else {
+                        // Process data and create a line chart
+                        const years = data.Year;
+                        const cropValues = data[crop];
+
+                        currentChart = new Chart(chartCanvas, {
+                            type: 'line',
+                            data: {
+                                labels: years,
+                                datasets: [{
+                                    label: `Production Value in MT (${crop})`,
+                                    data: cropValues,
+                                    borderColor: 'blue',
+                                    borderWidth: 1,
+                                    fill: false
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Year'
+                                        }
+                                    },
+                                    y: {
+                                        title: {
+                                            display: true,
+                                            text: `Production Value in MT (${crop})`
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+
+            // Initial chart update
+            updateChart('Melbourne', 'Production_Value_Barley');
+
+            // Add event listener for location select element
+            const locationSelect = document.getElementById('location');
+            locationSelect.addEventListener('change', function() {
+                const location = this.value;
+                const crop = document.getElementById('crop').value;
+
+                // Call the function to update the chart when location changes
+                updateChart(location, crop);
+            });
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const location = document.getElementById('location').value;
+                const crop = document.getElementById('crop').value;
+
+                // Call the function to update the chart when form is submitted
+                updateChart(location, crop);
+            });
+        });
+    </script>
+
+</body>
+
+</html>

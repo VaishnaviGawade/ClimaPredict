@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>ClimaPredict</title>
+        <link rel="icon" type="image/x-icon" href="favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+
+        <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+        <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+
+
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="#page-top">ClimaPredict</a>
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="#recom">Crop Recommendation</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#projects">Production Trends</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#signup">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Masthead-->
+        <header class="masthead">
+            <div class="container px-4 px-lg-5 d-flex h-100 align-items-center justify-content-center">
+                <div class="d-flex justify-content-center">
+                    <div class="text-center">
+                        <h1 class="mx-auto my-0 text-uppercase">ClimaPredict</h1>
+                        <h2 class="text-white-50 mx-auto mt-2 mb-5">Sowing Success Through Climate-Based Crop Recommendation.</h2>
+                        <a class="btn btn-primary" href="#recom">Get Started</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Recommendation-->
+        <section class="signup-section" id="recom">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5">
+                    <div class="col-md-10 col-lg-8 mx-auto text-center">
+                        <i class="fas fa-seedling fa-2x mb-2 text-white"></i>
+                        <h2 class="text-white mb-5">Enter Climate Data for Crop Recommendation.</h2>
+                        
+                        <form action="/predict" method="POST">
+                            <!-- Nitrogen Input -->
+                            <div class="row mt-4">
+                                <div class="col-md-4 mb-3">
+                                    <label for="Nitrogen" class="form-label">Nitrogen</label>
+                                    <input type="number" id="Nitrogen" name="Nitrogen" placeholder="Nitrogen" class="form-control" required step="0">
+                                </div>
+                                <!-- Phosphorus Input -->
+                                <div class="col-md-4 mb-3">
+                                    <label for="Phosphorus" class="form-label">Phosphorus</label>
+                                    <input type="number" id="Phosphorus" name="Phosphorus" placeholder="Phosphorus" class="form-control" required step="00">
+                                </div>
+                                <!-- Potassium Input -->
+                                <div class="col-md-4 mb-3">
+                                    <label for="Potassium" class="form-label">Potassium</label>
+                                    <input type="number" id="Potassium" name="Potassium" placeholder="Potassium" class="form-control" required step="0">
+                                </div>
+                            </div>
+                        
+                            <!-- Temperature, Humidity, and pH Inputs -->
+                            <div class="row mt-4">
+                                <div class="col-md-4 mb-3">
+                                    <label for="Temperature" class="form-label">Temperature (°C)</label>
+                                    <input type="number" step="0.01" id="Temperature" name="Temperature" placeholder="°C" class="form-control" required step="0">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="Humidity" class="form-label">Humidity (%)</label>
+                                    <input type="number" step="0.01" id="Humidity" name="Humidity" placeholder="Humidity in %" class="form-control" required step="0">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="Ph" class="form-label">pH Value</label>
+                                    <input type="number" step="0.01" id="Ph" name="Ph" placeholder="pH value" class="form-control" required step="0">
+                                </div>
+                            </div>
+                        
+                            <!-- Rainfall Input -->
+                            <div class="row mt-4 d-flex align-items-center">
+                                <div class="col-md-4 mb-3">
+                                    <label for="Rainfall" class="form-label">Rainfall (mm)</label>
+                                    <input type="number" step="0.01" id="Rainfall" name="Rainfall" placeholder="Rainfall in mm" class="form-control" required>
+                                </div>
+                            </div>
+                        
+                            <!-- Submit Button -->
+                            <div class="row mt-4">
+                                <div class="col-md-12 text-center">
+                                    <button type="submit" class="btn btn-primary btn-lg">Get Recommendation</button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+<!-- Result-->
+        <section class="result-section text-center" id="result">
+                <!-- Crop Recommendation (if result exists) -->
+                {% if result %}
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <h5 class="card-title" style="color: white;">Recommended Crop:</h5>
+                                <p class="card-text" style="color: white;margin-bottom: 0.5rem;">{{ result }}</p>
+
+                            </div>
+                        </div>
+                {% endif %}
+            <img class="img-fluid" src="{{ url_for('static', filename='assets/img/Rice.png') }}" alt="..." />
+        </section>
+
+
+        <!-- Projects-->
+        <section class="projects-section bg-light" id="projects">
+            <div class="container mt-5">
+              <div class="row justify-content-center">
+                <div class="col-md-8">
+                  <h1 class="text-center">Data Visualization</h1>
+                  <div class="card">
+                    <div class="card-body">
+                      <form id="data-form" class="text-center">
+                        <div class="form-group">
+                          <label for="location">Select State:</label>
+                          <select class="form-control" id="location" name="location">
+                            <option value="Melbourne">Victoria</option>
+                            <option value="Perth">Queensland</option>
+                            <option value="Brisbane">New South Wales</option>
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <label for="crop">Select Crop Type:</label>
+                          <select class="form-control" id="crop" name="crop">
+                            <option value="Production_Value_Barley">Barley</option>
+                            <option value="Production_Value_Canola">Canola</option>
+                            <option value="Production_Value_Wheat">Wheat</option>
+                          </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block mt-3">Visualize Trend</button>
+                      </form>
+                      <div class="mt-4" style="height: 400px;">
+                        <canvas id="line-chart"></canvas>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </section>
+
+        
+        
+        <!-- Contact-->
+        <section class="contact-section bg-black">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card py-4 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-map-marked-alt text-primary mb-2"></i>
+                                <h4 class="text-uppercase m-0">Address</h4>
+                                <hr class="my-4 mx-auto" />
+                                <div class="small text-black-50">4923 Market Street, Orlando FL</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card py-4 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-envelope text-primary mb-2"></i>
+                                <h4 class="text-uppercase m-0">Email</h4>
+                                <hr class="my-4 mx-auto" />
+                                <div class="small text-black-50"><a href="#!">hello@yourdomain.com</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card py-4 h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-mobile-alt text-primary mb-2"></i>
+                                <h4 class="text-uppercase m-0">Phone</h4>
+                                <hr class="my-4 mx-auto" />
+                                <div class="small text-black-50">+1 (555) 902-8832</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="social d-flex justify-content-center">
+                    <a class="mx-2" href="#!"><i class="fab fa-twitter"></i></a>
+                    <a class="mx-2" href="#!"><i class="fab fa-facebook-f"></i></a>
+                    <a class="mx-2" href="#!"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="footer bg-black small text-center text-white-50"><div class="container px-4 px-lg-5">Copyright &copy; Your Website 2023</div></footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <!-- Core theme JS-->
+        <script src="scripts.js"></script>
+        <script>
+            {% if scroll_to_result %}
+            // Scroll to the result section when 'scroll_to_result' is true
+            window.addEventListener('DOMContentLoaded', function () {
+                var element = document.getElementById("result");
+                if (element) {
+                    element.scrollIntoView({ behavior: "smooth" });
+                }
+            });
+            {% endif %}
+            document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('data-form');
+            const chartCanvas = document.getElementById('line-chart').getContext('2d');
+            let currentChart = null; // Track the current chart instance
+
+            // Function to fetch and update the chart
+            function updateChart(location, crop) {
+                // Check if a chart exists and destroy it
+                if (currentChart) {
+                    currentChart.destroy();
+                }
+
+                fetch('/get_data', {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        location: location,
+                        crop: crop,
+                    }),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if ('error' in data) {
+                            console.error('Error:', data.error);
+                        } else {
+                            // Process data and create a dual-axis line chart
+                            const years = data.Year;
+                            const cropValues = data[crop];
+                            const maxTempValues = data['Yearly Mean Maximum Temperature'];
+
+                            currentChart = new Chart(chartCanvas, {
+                                type: 'line',
+                                data: {
+                                    labels: years,
+                                    datasets: [
+                                        {
+                                            label: `Production Value in KT (${crop})`,
+                                            data: cropValues,
+                                            borderColor: '#558985',
+                                            borderWidth: 1,
+                                            fill: false,
+                                            yAxisID: 'y-axis-production', // Use a specific y-axis
+                                        },
+                                        {
+                                            label: 'Yearly Mean Max Temp °C',
+                                            data: maxTempValues,
+                                            borderColor: '#985555',
+                                            borderWidth: 1,
+                                            fill: false,
+                                            yAxisID: 'y-axis-temperature', // Use a specific y-axis
+                                        },
+                                    ],
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        x: {
+                                            title: {
+                                                display: true,
+                                                text: 'Year',
+                                            },
+                                        },
+                                        yAxes: [
+                                            {
+                                                id: 'y-axis-production',
+                                                position: 'left', // Position on the left side
+                                                title: {
+                                                    display: true,
+                                                    text: `Production Value in KT (${crop})`,
+                                                },
+                                            },
+                                            {
+                                                id: 'y-axis-temperature',
+                                                position: 'right', // Position on the right side
+                                                title: {
+                                                    display: true,
+                                                    text: 'Yearly Mean Max Temp °C',
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+            }
+
+            // Initial chart update
+            updateChart('Melbourne', 'Production_Value_Barley');
+
+            // Add event listener for location select element
+            const locationSelect = document.getElementById('location');
+            locationSelect.addEventListener('change', function () {
+                const location = this.value;
+                const crop = document.getElementById('crop').value;
+
+                // Call the function to update the chart when location changes
+                updateChart(location, crop);
+            });
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const location = document.getElementById('location').value;
+                const crop = document.getElementById('crop').value;
+
+                // Call the function to update the chart when the form is submitted
+                updateChart(location, crop);
+            });
+        });
+
+
+        </script>
+
+        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+    </body>
+</html>
